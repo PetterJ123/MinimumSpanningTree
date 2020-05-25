@@ -6,9 +6,8 @@
 // @Input:              a path to a text-file containing nodes and their weights
 // @Output:             a text-file of which nodes and edges are left in the MST
 
-#include "Edge.h"
-#include "DisjointSet.h"
 #include "func.h"
+#include <chrono>
 
 struct compare
 {   
@@ -21,6 +20,7 @@ struct compare
 
 int main(int argc, char *argv[])
 {
+    auto totStart = std::chrono::steady_clock::now();
     // takes input file path
     std::string filePath = "";
     if(argc < 2)
@@ -46,15 +46,26 @@ int main(int argc, char *argv[])
     
     // sorts edges to asending order with compare()
     std::sort(edges.begin(), edges.end(), compare());
+    
+    auto mstStart = std::chrono::steady_clock::now();
 
     // run kruskals algorithm
     std::vector<Edge> st = kruskal(edges, fd.nodes.size());
     
+    auto mstStop = std::chrono::steady_clock::now();
+
     // find and map back nodes to their id
     fd = mapIntToStr(fd, st);
 
     // produce output-file Answer.txt
     outputKruskalsData(fileStream, fd);
+    
+    auto totStop = std::chrono::steady_clock::now();
+    std::chrono::duration<double> mstSec = mstStop - mstStart;
+    std::chrono::duration<double> tot = totStop - totStart;
+    
+    std::cout << "Kruskals took: " << mstSec.count() << " seconds\n"
+                << "Total runtime: " << tot.count() << " seconds\n";
 
     return 0;
 }
