@@ -31,7 +31,7 @@ std::vector<Edge> kruskal(std::vector<Edge> edges, int vertCount)
     disjointSet.makeSet(vertCount);
 
     // pick an edge and make sure it doesn't make a cycle
-    while(spanningTree.size() != vertCount - 1)
+    while(spanningTree.size() != (size_t)(vertCount - 1))
     {
         Edge nextEdge = edges.back();
         edges.pop_back();
@@ -97,7 +97,7 @@ void outputKruskalsData(std::fstream& fstream, fileData fd)
     fstream.open("Answer.txt", std::ios::out | std::ios::trunc);
 
     int k=0, i=0;
-    while(k != fd.nodes.size())
+    while(k != (int)fd.nodes.size())
     {
         // if inputnodes is same as node after algorithm...
         if(fd.nodes[k] == fd.outputNodes[i])
@@ -106,7 +106,7 @@ void outputKruskalsData(std::fstream& fstream, fileData fd)
             fstream << fd.outputNodes[i] << "\n";
             k++;
         }
-        else if(i == fd.outputNodes.size())
+        else if(i == (int)fd.outputNodes.size())
         {
             i=0;
         }
