@@ -14,7 +14,7 @@
 // @Input:              a path to a text-file containing nodes and their weights
 // @Output:             a text-file of which nodes and edges are left in the MST
 
-#include "func.h"
+#include "Func.hpp"
 #include <chrono>
 #include <sys/stat.h>
 #include <sys/stat.h>

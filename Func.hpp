@@ -1,5 +1,5 @@
-#ifndef FUNC_H
-#define FUNC_H
+#ifndef FUNC_HPP
+#define FUNC_HPP
 
 #include <iostream>
 #include <vector>
@@ -9,8 +9,8 @@
 #include <typeinfo>
 #include <string>
 #include <tuple>
-#include "Edge.h"
-#include "DisjointSet.h"
+#include "Edge.hpp"
+#include "DisjointSet.hpp"
 
 struct fileData
 {

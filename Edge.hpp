@@ -1,5 +1,5 @@
-#ifndef EDGE_H
-#define EDGE_H
+#ifndef EDGE_HPP
+#define EDGE_HPP
 
 class Edge
 {

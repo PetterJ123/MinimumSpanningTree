@@ -32,6 +32,10 @@
 *.app
 
 # My own ignores
-*/
+desc/
+report\ material/
+Feedback/
+deliver/
+Answer.txt
+.vscode
 *.code-workspace
-*.txt
