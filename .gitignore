@@ -34,3 +34,4 @@
 # My own ignores
 */
 *.code-workspace
+*.txt

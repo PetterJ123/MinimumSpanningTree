@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <typeinfo>
 #include <string>
 #include <tuple>
 #include "Edge.h"
@@ -29,7 +30,6 @@ std::vector<Edge> kruskal(std::vector<Edge> edges, int vertCount)
 
     DisjointSet disjointSet;
     disjointSet.makeSet(vertCount);
-
     // pick an edge and make sure it doesn't make a cycle
     while(spanningTree.size() != (size_t)(vertCount - 1))
     {
@@ -46,6 +46,7 @@ std::vector<Edge> kruskal(std::vector<Edge> edges, int vertCount)
             disjointSet.Union(setItemX,setItemY);
         }
     }
+    
     return spanningTree;
 }
 
@@ -56,11 +57,11 @@ fileData extractData(fileData fd, std::string fpath)
 {
     std::stringstream ss;
     std::fstream fileStream;
-    fileStream.open(fpath);
+    fileStream.open(fpath, std::fstream::in);
     std::string line, srcNode, dstNode;
     int weight, mapNum = 0;
     bool halfFile = false;
-
+    
     while(std::getline(fileStream, line))
     {
         if(line.empty() && !halfFile)
@@ -69,7 +70,7 @@ fileData extractData(fileData fd, std::string fpath)
         }
         else if(halfFile)
         {
-            // extract edges and their connections
+            // Reads second part of textfile with connections
             ss.str(line);
             ss >> srcNode >> dstNode >> weight;
             ss.clear();
@@ -78,55 +79,58 @@ fileData extractData(fileData fd, std::string fpath)
         }
         else
         {
-            // extract nodes and insert into two maps
+            // Read first half of textfile with nodes only
             fd.nodeMap[line] = mapNum;
             fd.invertedNodeMap[mapNum] = line;
             fd.nodes.push_back(line);
             mapNum++;
         }
     }
-    
+
+    fileStream.close();
+
     return fd;
 }
 
 // @param fstream;  reference to filestream object
 // @param fd;       struct instance containing data extracted and worked on by this program
 // @return;         void
-void outputKruskalsData(std::fstream& fstream, fileData fd)
+void outputKruskalsData(std::fstream& fstream, fileData &fd)
 {
+    // Open new file and trucate it
     fstream.open("Answer.txt", std::ios::out | std::ios::trunc);
 
-    int k=0, i=0;
-    while(k != (int)fd.nodes.size())
+    // Write the nodes that exist into answer-file
+    for(auto &n : fd.nodes)
     {
-        // if inputnodes is same as node after algorithm...
-        if(fd.nodes[k] == fd.outputNodes[i])
+        if(std::find(fd.outputNodes.begin(), fd.outputNodes.end(), n) != fd.outputNodes.end())
         {
-            // ...output to file 
-            fstream << fd.outputNodes[i] << "\n";
-            k++;
+            fstream << n << "\n";
         }
-        else if(i == (int)fd.outputNodes.size())
-        {
-            i=0;
-        }
-        i++;
     }
+    
     fstream << "\n";
 
-    // output edges and their weights
-    for(auto &a : fd.outputWeights)
+    // Write connections and weight to answer-file
+    for(auto &ow : fd.outputWeights)
     {
-        fstream << std::get<0>(a) << "\t" << std::get<1>(a) << "\t" << std::get<2>(a) << "\n";
+        fstream << std::get<0>(ow) << "\t" << std::get<1>(ow) << "\t" << std::get<2>(ow) << "\n";
     }
+    
+    fstream.close();
 }
 
 // @param fd;   struct instance containing data extracted and worked on by this program
 // @param spt;  edges that are in the spanning tree after kruskal's algorithm
 // @return;     updated filedata object
-fileData mapIntToStr(fileData fd, std::vector<Edge>& spt)
+fileData mapIntToStr(fileData &fd, std::vector<Edge>& spt)
 {
+    std::fstream fileStream;
+    std::vector<std::string> mstNodes;
+    fileStream.open("Answer.txt", std::ios::out | std::ios::trunc);
     int weightSum = 0;
+
+    // Maps the internal representation of nodes to what nodes was represented in the textfile
     for(auto &s : spt)
     {
         auto search = fd.invertedNodeMap.find(s.source);
@@ -136,7 +140,10 @@ fileData mapIntToStr(fileData fd, std::vector<Edge>& spt)
         fd.outputNodes.push_back(search->second);
         fd.outputNodes.push_back(search2->second);
     }
+
+    // Prints the sum of the mst
     std::cout << "Sum of MST: " << weightSum << "\n";
+
     return fd;
 }
 

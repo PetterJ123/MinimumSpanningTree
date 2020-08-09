@@ -1,13 +1,23 @@
 // @Author:             Petter Johansson
-// @Date:               Thursday 22/5 - 2020
+// @Date:               Sunday 9/8 - 2020
 
 // @Description:        This is a program that takes a text-file containing nodes and their weights to then run kruskals algorithm and find the minimum spanning tree (MST). This software makes use of the standard library and the disjoint-set algorithm (or union find algorithm).
+// Example:             A
+//                      B
+//                      C
+//                      D
+
+//                      A   B   3
+//                      B   C   3
+//                      C   D   1
 
 // @Input:              a path to a text-file containing nodes and their weights
 // @Output:             a text-file of which nodes and edges are left in the MST
 
 #include "func.h"
 #include <chrono>
+#include <sys/stat.h>
+#include <sys/stat.h>
 
 struct compare
 {   
@@ -21,17 +31,32 @@ struct compare
 int main(int argc, char *argv[])
 {
     auto totStart = std::chrono::steady_clock::now();
-    // takes input file path
-    std::string filePath = "";
+    struct stat info;
+
+    // checks if correct number of arguments are passed
     if(argc < 2)
     {
         std::cout << "Missing arguments" << "\n";
         return -1;
     }
-    filePath = argv[1];
+    else if (argc > 2)
+    {
+        std::cout << "Can only handle two arguments\n";
+        return -1;
+    }
 
+    // Check to see if path exists
+    if(stat(argv[1], &info) != 0)
+    {
+        std::cout << "Path doesn't exist\n";
+        return -1;
+    }
+
+    std::string filePath = argv[1];
+        
     std::fstream fileStream;
     fileData fd;
+
     // extracts data from the input file
     fd = extractData(fd, filePath);
 
@@ -46,12 +71,12 @@ int main(int argc, char *argv[])
     
     // sorts edges to asending order with compare()
     std::sort(edges.begin(), edges.end(), compare());
-    
-    auto mstStart = std::chrono::steady_clock::now();
 
+    auto mstStart = std::chrono::steady_clock::now();
+    
     // run kruskals algorithm
     std::vector<Edge> st = kruskal(edges, fd.nodes.size());
-    
+
     auto mstStop = std::chrono::steady_clock::now();
 
     // find and map back nodes to their id
@@ -60,6 +85,7 @@ int main(int argc, char *argv[])
     // produce output-file Answer.txt
     outputKruskalsData(fileStream, fd);
     
+    // Stop clocks and print results
     auto totStop = std::chrono::steady_clock::now();
     std::chrono::duration<double> mstSec = mstStop - mstStart;
     std::chrono::duration<double> tot = totStop - totStart;
